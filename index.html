@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080d16">
+    <meta name="description" content="Observa un ecosistema artificial donde agentes autónomos compiten, sobreviven y evolucionan.">
+    <title>SURVIVAL AI — Only the Adaptable Survive</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <main class="app-shell">
+        <header class="topbar">
+            <a class="brand" href="#" aria-label="SURVIVAL AI inicio">
+                <span class="brand-mark" aria-hidden="true">S</span>
+                <span class="brand-copy"><strong>SURVIVAL<span> AI</span></strong><small>ONLY THE ADAPTABLE SURVIVE</small></span>
+            </a>
+            <div class="topbar-status">
+                <span class="live-dot" id="statusDot"></span>
+                <span id="simulationStatus">EN ESPERA</span>
+                <span class="status-divider"></span>
+                <span class="clock-label">TIEMPO <b id="time">00:00</b></span>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <section class="simulation-column" aria-label="Simulación del ecosistema">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">OBSERVATORIO / SECTOR 01</span>
+                        <h1>El ecosistema</h1>
+                    </div>
+                    <div class="generation-badge"><span>GENERACIÓN</span><b id="generation">1</b></div>
+                </div>
+
+                <div class="arena-frame">
+                    <canvas id="simulationCanvas" aria-label="Mapa del ecosistema con agentes y recursos"></canvas>
+                    <div class="arena-overlay"><span class="live-dot"></span><span id="arenaPopulation">0 AGENTES</span></div>
+                    <div class="arena-coordinates">CAMPO DE SIMULACIÓN&nbsp; · &nbsp;01</div>
+                </div>
+
+                <div class="legend" aria-label="Leyenda">
+                    <span class="legend-title">LEYENDA</span>
+                    <span><i class="legend-agent"></i> Agentes</span>
+                    <span><i class="legend-resource resource-a"></i> Nutriente</span>
+                    <span><i class="legend-resource resource-b"></i> Biomasa</span>
+                    <span><i class="legend-resource resource-c"></i> Mineral</span>
+                </div>
+
+                <section class="chart-panel" aria-labelledby="chartTitle">
+                    <div class="panel-heading">
+                        <div><span class="eyebrow">TENDENCIA DEL ECOSISTEMA</span><h2 id="chartTitle">Población y energía</h2></div>
+                        <div class="chart-legend"><span><i class="chart-pop"></i>Población</span><span><i class="chart-energy"></i>Energía media</span></div>
+                    </div>
+                    <svg id="historyChart" class="history-chart" viewBox="0 0 600 112" role="img" aria-label="Gráfico de evolución de población y energía promedio">
+                        <line x1="0" y1="20" x2="600" y2="20" class="chart-grid"></line>
+                        <line x1="0" y1="56" x2="600" y2="56" class="chart-grid"></line>
+                        <line x1="0" y1="92" x2="600" y2="92" class="chart-grid"></line>
+                        <polyline id="populationLine" class="population-line" points=""></polyline>
+                        <polyline id="energyLine" class="energy-line" points=""></polyline>
+                    </svg>
+                    <div class="chart-axis"><span>INICIO</span><span>ACTUAL</span></div>
+                </section>
+            </section>
+
+            <aside class="control-column" aria-label="Panel de control y estadísticas">
+                <section class="panel stats-panel">
+                    <div class="panel-heading">
+                        <div><span class="eyebrow">LECTURAS EN TIEMPO REAL</span><h2>Estado del sistema</h2></div>
+                        <span class="pulse-icon" aria-hidden="true">✳</span>
+                    </div>
+                    <div class="stat-grid">
+                        <article class="stat-card stat-primary"><span class="stat-label">POBLACIÓN VIVA</span><strong id="population">0</strong><small>AGENTES ACTIVOS</small></article>
+                        <article class="stat-card"><span class="stat-label">ENERGÍA PROMEDIO</span><strong><span id="averageEnergy">0</span><em> EN</em></strong><small>POR AGENTE</small></article>
+                        <article class="stat-card"><span class="stat-label">NACIMIENTOS</span><strong id="births">0</strong><small>DESCENDIENTES</small></article>
+                        <article class="stat-card"><span class="stat-label">MUERTES</span><strong id="deaths">0</strong><small>EN ESTA SIMULACIÓN</small></article>
+                        <article class="stat-card"><span class="stat-label">RESERVA DE ENERGÍA</span><strong id="resourceCount">0</strong><small>NODOS DISPONIBLES</small></article>
+                        <article class="stat-card"><span class="stat-label">MEJOR SUPERVIVENCIA</span><strong><span id="bestSurvival">0</span><em> s</em></strong><small>HISTÓRICA</small></article>
+                        <article class="stat-card"><span class="stat-label">MAYOR EDAD</span><strong><span id="maxAge">0</span><em> s</em></strong><small>ALCANZADA</small></article>
+                        <article class="stat-card stat-wide"><span class="stat-label">AGENTE CON MÁS ENERGÍA</span><strong id="maxEnergyAgent">—</strong><small>VALOR ENERGÉTICO</small></article>
+                    </div>
+                </section>
+
+                <section class="panel controls-panel">
+                    <div class="panel-heading">
+                        <div><span class="eyebrow">OPERACIONES</span><h2>Control de simulación</h2></div>
+                    </div>
+                    <div class="primary-controls">
+                        <button id="startPauseBtn" class="button button-primary" type="button"><span class="play-icon" aria-hidden="true">▶</span> Iniciar simulación</button>
+                        <button id="resetBtn" class="button button-secondary" type="button"><span aria-hidden="true">↺</span> Reiniciar</button>
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">VELOCIDAD</span>
+                        <div class="button-pair">
+                            <button id="decreaseSpeedBtn" class="icon-button" type="button" aria-label="Disminuir velocidad">−</button>
+                            <output id="speedValue">1×</output>
+                            <button id="increaseSpeedBtn" class="icon-button" type="button" aria-label="Aumentar velocidad">+</button>
+                        </div>
+                    </div>
+                    <button id="addEnergyBtn" class="button button-utility" type="button"><span aria-hidden="true">✦</span> Inyectar energía <small>+25 EN a cada agente</small></button>
+                    <div class="control-row resources-row">
+                        <span class="control-label">NODOS DE RECURSOS</span>
+                        <div class="button-pair">
+                            <button id="decreaseResourcesBtn" class="icon-button" type="button" aria-label="Disminuir recursos">−</button>
+                            <output id="resourceSetting">80</output>
+                            <button id="increaseResourcesBtn" class="icon-button" type="button" aria-label="Aumentar recursos">+</button>
+                        </div>
+                    </div>
+                    <label class="range-control" for="populationInput">
+                        <span><span class="control-label">POBLACIÓN INICIAL</span><output id="populationValue">60</output></span>
+                        <input id="populationInput" type="range" min="10" max="160" step="5" value="60">
+                    </label>
+                    <label class="range-control" for="mutationInput">
+                        <span><span class="control-label">TASA DE MUTACIÓN</span><output id="mutationValue">8%</output></span>
+                        <input id="mutationInput" type="range" min="0" max="30" step="1" value="8">
+                    </label>
+                    <label class="range-control" for="scarcityInput">
+                        <span><span class="control-label">ESCasez DE RECURSOS</span><output id="scarcityValue">Normal</output></span>
+                        <input id="scarcityInput" type="range" min="1" max="5" step="1" value="3">
+                        <span class="range-hint"><span>ABUNDANTE</span><span>EXTREMA</span></span>
+                    </label>
+                </section>
+
+                <div class="evolution-note"><span aria-hidden="true">⌁</span><p><strong>Selección natural activa</strong><br>Los rasgos heredables que ayudan a sobrevivir se transmiten a la siguiente generación.</p></div>
+            </aside>
+        </div>
+        <footer class="footer"><span>SURVIVAL AI <i>·</i> SIMULACIÓN ECOLÓGICA ARTIFICIAL</span><span>UN ECOSISTEMA EN EVOLUCIÓN</span></footer>
+    </main>
+</body>
+</html>
